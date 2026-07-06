@@ -35,8 +35,6 @@ geocode_with_limit = RateLimiter(
     swallow_exceptions=False,
 )
 
-# Fallback geocoder — used automatically if Nominatim is rate-limited or
-# temporarily blocking this IP (403). Different infrastructure, no API key needed.
 photon_geolocator = Photon(user_agent="nova-maps-app (contact: your-email@example.com)")
 photon_geocode_with_limit = RateLimiter(
     photon_geolocator.geocode,
@@ -54,7 +52,7 @@ def geocode(address: str):
         loc = geocode_with_limit(address, timeout=10)
         if loc:
             return loc.latitude, loc.longitude, loc.address
-        return None  # Nominatim responded but found nothing — don't fall back, it's a genuine no-match
+        return None  
     except Exception as e:
         if "403" in str(e) or "429" in str(e):
             st.caption("Primary geocoder is rate-limited — trying a fallback…")
@@ -73,7 +71,6 @@ def geocode(address: str):
 def get_route(origin_coords, dest_coords, mode="car"):
     """Get route from OpenRouteService."""
     if not ORS_API_KEY:
-        # Fallback: straight line
         return None, None
     profile_map = {"car": "driving-car", "walk": "foot-walking", "bike": "cycling-regular"}
     profile = profile_map.get(mode, "driving-car")
@@ -167,7 +164,6 @@ def build_map(center, zoom, markers=None, route_coords=None,
     tiles, attr = tile_options.get(map_style, tile_options["OpenStreetMap"])
     m = folium.Map(location=center, zoom_start=zoom, tiles=tiles, attr=attr)
 
-    # Traffic tile overlay from TomTom
     if show_traffic_layer and TOMTOM_API_KEY:
         traffic_url = (
             f"https://api.tomtom.com/traffic/map/4/tile/flow/relative0/"
@@ -182,23 +178,20 @@ def build_map(center, zoom, markers=None, route_coords=None,
             opacity=0.7,
         ).add_to(m)
 
-    # Route polyline
     if route_coords:
-        folium.PolyLine(route_coords, color="#1a73e8", weight=5, opacity=0.85).add_to(m)
+        folium.PolyLine(route_coords, color="#388bfd", weight=5, opacity=0.85).add_to(m)
 
-    # Geolocation accuracy circle
     if accuracy_circle and accuracy_circle.get("radius_m"):
         folium.Circle(
             location=[accuracy_circle["lat"], accuracy_circle["lon"]],
             radius=accuracy_circle["radius_m"],
-            color="#1a73e8",
+            color="#1f6feb",
             fill=True,
-            fill_color="#1a73e8",
+            fill_color="#1f6feb",
             fill_opacity=0.12,
             weight=1,
         ).add_to(m)
 
-    # Markers
     for mk in (markers or []):
         icon_color = mk.get("color", "red")
         icon_name  = mk.get("icon",  "map-marker")
@@ -210,7 +203,6 @@ def build_map(center, zoom, markers=None, route_coords=None,
             icon=folium.Icon(color=icon_color, icon=icon_name, prefix="fa"),
         ).add_to(m)
 
-    # Traffic incidents
     for inc in (incidents or []):
         try:
             coords = inc["geometry"]["coordinates"]
@@ -235,7 +227,7 @@ def build_map(center, zoom, markers=None, route_coords=None,
 
 # ── Session state defaults ────────────────────────────────────────────────────
 defaults = {
-    "center": [34.0, -117.2],   # Menifee, CA default
+    "center": [34.0, -117.2],   
     "zoom": 12,
     "markers": [],
     "route_coords": None,
@@ -249,46 +241,79 @@ for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
+# ── CSS (Sleek Dark Cyber Theme Overhaul) ──────────────────────────────────────
 st.markdown("""
 <style>
-/* Overall dark nav feel */
+/* Sidebar Background & Fonts */
 [data-testid="stSidebar"] {
-    background: #1a1a2e;
-    color: #e0e0e0;
+    background: #0d1117 !important;
+    border-right: 1px solid #21262d;
 }
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3,
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] .stMarkdown p {
-    color: #e0e0e0 !important;
+    color: #c9d1d9 !important;
 }
+
+/* Modern Branding Title Logo */
 .main-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    background: linear-gradient(90deg, #1a73e8, #34a853);
+    background: linear-gradient(45deg, #58a6ff, #bc8cff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0px;
+    letter-spacing: -0.5px;
 }
+
+/* Custom Component Box Container */
+.sidebar-box {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 15px;
+}
+
+/* Custom Buttons Styling */
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #1f6feb 0%, #0d44a5 100%);
+    color: #ffffff !important;
+    border: 1px solid #388bfd;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+div.stButton > button:first-child:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(56, 139, 253, 0.35);
+    border-color: #58a6ff;
+}
+
+/* Custom Output Route & Traffic Cards (Dark Mode Match) */
 .route-card {
-    background: #f0f7ff;
-    border-left: 4px solid #1a73e8;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-left: 4px solid #58a6ff;
     border-radius: 8px;
     padding: 12px 16px;
     margin: 8px 0;
+    color: #c9d1d9;
 }
 .traffic-card {
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 12px 16px;
     margin: 6px 0;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
 }
-.traffic-green  { background:#e6f9ee; border-left:4px solid #34a853; }
-.traffic-orange { background:#fff3e0; border-left:4px solid #fb8c00; }
-.traffic-red    { background:#fce8e6; border-left:4px solid #ea4335; }
+.traffic-green  { background: #13231a; border-left: 4px solid #34a853; }
+.traffic-orange { background: #2c1a04; border-left: 4px solid #fb8c00; }
+.traffic-red    { background: #2b1414; border-left: 4px solid #ea4335; }
 
-/* ── Fullscreen map ─────────────────────────────────────────────────────── */
+/* Fullscreen Map Area Configuration */
 .block-container {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
@@ -322,7 +347,7 @@ div[data-testid="stVerticalBlock"] > div:has(iframe[srcdoc*="mrbunny-fab"]) {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+# ── Sidebar Area ──────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="main-title">🗺️ Nova Maps</div>', unsafe_allow_html=True)
     st.caption("Powered by OSM · TomTom · ORS")
@@ -340,11 +365,13 @@ with st.sidebar:
 
     # ── Search tab ──────────────────────────────────────────────────────────
     if tab == "Search":
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
         st.subheader("🔍 Search Location")
         search_query = st.text_input("Enter address or place", placeholder="e.g. Eiffel Tower, Paris")
         col1, col2 = st.columns(2)
         search_btn = col1.button("Search", use_container_width=True, type="primary")
         clear_btn  = col2.button("Clear",  use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if clear_btn:
             st.session_state.markers = []
@@ -370,9 +397,42 @@ with st.sidebar:
             else:
                 st.error("Location not found. Try a more specific address.")
 
-        st.divider()
+        # UNIQUE FEATURE 1: Warp Engine Teleporter
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
+        st.subheader("🚀 Warp Engine")
+        st.caption("Teleport to legendary world locations instantly:")
+        landmark = st.selectbox("Select Destination", [
+            "Select custom coordinates...",
+            "Tony Stark's Malibu Mansion (Point Dume)", 
+            "The Great Pyramids of Giza", 
+            "Tokyo Skytree",
+            "NASA Kennedy Space Center"
+        ])
+        
+        landmarks_data = {
+            "Tony Stark's Malibu Mansion (Point Dume)": (34.0012, -118.8066, "Stark Mansion Site", "cloud"),
+            "The Great Pyramids of Giza": (29.9792, 31.1342, "Pyramids of Giza", "sun"),
+            "Tokyo Skytree": (35.7101, 139.8107, "Tokyo Skytree", "bolt"),
+            "NASA Kennedy Space Center": (28.5729, -80.6490, "LC-39 Launch Complex", "rocket")
+        }
+        
+        if landmark != "Select custom coordinates...":
+            lat, lon, label, icon = landmarks_data[landmark]
+            st.session_state.center = [lat, lon]
+            st.session_state.zoom = 16
+            st.session_state.markers = [{
+                "lat": lat, "lon": lon,
+                "label": label,
+                "popup": f"<b>✨ Teleported to: {label}</b>",
+                "color": "purple", "icon": icon
+            }]
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
         st.caption("Or use your current location:")
         location = streamlit_geolocation()
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if location and location.get("latitude"):
             loc_lat, loc_lon = location["latitude"], location["longitude"]
@@ -398,13 +458,17 @@ with st.sidebar:
 
     # ── Directions tab ──────────────────────────────────────────────────────
     elif tab == "Directions":
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
         st.subheader("🧭 Get Directions")
         origin_input = st.text_input("From", placeholder="Start address")
         dest_input   = st.text_input("To",   placeholder="Destination address")
         mode = st.selectbox("Travel mode", ["car", "walk", "bike"],
                             format_func=lambda x: {"car":"🚗 Drive","walk":"🚶 Walk","bike":"🚲 Bike"}[x])
 
-        if st.button("Get Directions", type="primary", use_container_width=True):
+        get_dir_btn = st.button("Get Directions", type="primary", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        if get_dir_btn:
             if origin_input and dest_input:
                 with st.spinner("Calculating route…"):
                     orig = geocode(origin_input)
@@ -426,12 +490,26 @@ with st.sidebar:
                         mid = [(o_lat + d_lat) / 2, (o_lon + d_lon) / 2]
                         st.session_state.center = mid
                         st.session_state.zoom   = 12
+                        
                         if info:
                             st.markdown(f"""
                             <div class="route-card">
-                            🛣️ <b>{info['distance_km']} km</b> &nbsp;|&nbsp;
+                            🛣️ <b>{info['distance_km']} km</b> &nbsp;|&nbsp; 
                             ⏱️ <b>{info['duration_min']} min</b>
                             </div>""", unsafe_allow_html=True)
+                            
+                            # UNIQUE FEATURE 2: Theoretical Alternate Transit Formulations
+                            dist = info['distance_km']
+                            jetpack_time = round((dist / 120) * 60, 1)   # Speed: 120 km/h
+                            hyperloop_time = round((dist / 1000) * 60, 1) # Speed: 1000 km/h
+                            
+                            st.markdown(f"""
+                            <div class="route-card" style="border-left-color: #bc8cff;">
+                            🚀 <b>NOVA Advanced Transit Estimates:</b><br>
+                            • 🎒 <b>Jetpack Flight:</b> {jetpack_time if jetpack_time > 0.1 else 0.1} mins (at 120 km/h)<br>
+                            • 🚄 <b>Hyperloop Pod:</b> {hyperloop_time if hyperloop_time > 0.1 else 0.1} mins (at 1000 km/h)
+                            </div>
+                            """, unsafe_allow_html=True)
                     else:
                         st.error("Could not geocode one or both addresses.")
             else:
@@ -442,6 +520,7 @@ with st.sidebar:
 
     # ── Traffic tab ─────────────────────────────────────────────────────────
     elif tab == "Traffic":
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
         st.subheader("🚦 Traffic Info")
         traffic_loc = st.text_input("Check traffic near", placeholder="Address or place")
 
@@ -480,11 +559,13 @@ with st.sidebar:
                     st.error("Location not found.")
             else:
                 st.warning("Enter a location to check traffic.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.session_state["show_traffic_layer"] = show_layer
 
     # ── Layers tab ──────────────────────────────────────────────────────────
     elif tab == "Layers":
+        st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
         st.subheader("🗂️ Map Style")
         map_style = st.selectbox("Base layer", [
             "OpenStreetMap", "CartoDB Dark", "CartoDB Light",
@@ -496,7 +577,8 @@ with st.sidebar:
             if STADIA_API_KEY:
                 st.caption("✅ Using Stadia Maps terrain tiles (API key configured).")
             else:
-                st.caption("ℹ️ No Stadia API key set — using OpenTopoMap (free, no key needed) as the terrain source instead. Add a `STADIA_API_KEY` in secrets for Stadia's tiles.")
+                st.caption("ℹ️ No Stadia API key set — using OpenTopoMap fallback.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # ── API key status ───────────────────────────────────────────────────────
     st.divider()
@@ -504,7 +586,7 @@ with st.sidebar:
         st.markdown(
             f"**TomTom:** {'✅ Connected' if TOMTOM_API_KEY else '❌ Not set'}\n\n"
             f"**OpenRouteService:** {'✅ Connected' if ORS_API_KEY else '❌ Not set'}\n\n"
-            f"**Stadia Maps:** {'✅ Connected' if STADIA_API_KEY else '⚪ Not set (using free OpenTopoMap fallback)'}"
+            f"**Stadia Maps:** {'✅ Connected' if STADIA_API_KEY else '⚪ Not set (using free fallback)'}"
         )
         st.caption("Set keys in `.streamlit/secrets.toml` or environment variables.")
 
@@ -557,11 +639,9 @@ if st.session_state.route_info and tab == "Directions":
     info = st.session_state.route_info
     st.markdown(f"""
     <div class="route-card">
-    🛣️ &nbsp;<b>Distance:</b> {info['distance_km']} km &nbsp;&nbsp;
-    ⏱️ &nbsp;<b>Est. time:</b> {info['duration_min']} min
     </div>""", unsafe_allow_html=True)
 
-# ── MrBunny assistant widget (loaded from its own file) ───────────────────────
+# ── MrBunny assistant widget ──────────────────────────────────────────────────
 for widget_path in ("mrbunny_widget.html", "Mrbunny Widget.html"):
     try:
         with open(widget_path, "r", encoding="utf-8") as f:
