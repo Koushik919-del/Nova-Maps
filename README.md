@@ -4,4 +4,6 @@ Setting it up is simple. Just clone the repo, install the requirements, and drop
 
 Right now, the core map, routing, and traffic features are fully functional. Moving forward, the roadmap includes adding some cool upgrades like multi-stop route planning, saved user history, live traffic-adjusted ETAs, and a Street View integration. 🗺️
 
-THERE IS AN AI ASSISTANT THAT WILL BE ABLE TO HELP YOU WITH THE WEBSITE! CLICK ON THE BUNNY LOGO FOR IT. THANK YOU!
+THERE IS AN AI ASSISTANT THAT WILL BE ABLE TO HELP YOU WITH THE WEBSITE! CLICK ON THE BUNNY LOGO FOR IT. THANK YOU! THE CODE IS WRITTEN BY ME, AS THE HOURS SHOW. THE CODE IS THEN ORGANIZED AND DEBUGGED BY AI. 
+
+THANK YOU REVIEWERS
