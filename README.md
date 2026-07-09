@@ -6,3 +6,17 @@ A Maps Navigator Website that is a Combination of Apple Maps and Google Maps. No
 Try It Here: https://nova-maps.koushik919.hackclub.app/
 
 The Features
+ - Search Any Location Around the World
+ - Use the Enderpearl Chambers to Teleport to Popular Places
+ - See The Computer Guess Where You Are
+ - Get Directions to Somewhere by Clicking Directions
+ - Check Traffic and Incidents Anywhere
+ - Change Between 4 Map Styles
+ - MrBunny AI which helps you with the Website
+
+Credits
+- Koushik Tummepalli
+- OSM
+- TomTom
+- ORS
+- MrBunny AI
