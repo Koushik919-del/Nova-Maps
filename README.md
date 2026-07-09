@@ -1,9 +1,3 @@
-This is Nova Maps—a fully custom, free alternative to Google Maps built using Python. By combining Streamlit and Folium with free-tier APIs from OpenStreetMap, TomTom, and OpenRouteService, it handles everything from live traffic overlays and Turn-by-Turn directions to satellite views and interactive POI searches without costing a dime.
-
-Setting it up is simple. Just clone the repo, install the requirements, and drop your free API keys into a local `.streamlit/secrets.toml` file before launching it with `streamlit run app.py`. If you want to share it, the project is completely ready to deploy straight to Streamlit Cloud for free.
-
-Right now, the core map, routing, and traffic features are fully functional. Moving forward, the roadmap includes adding some cool upgrades like multi-stop route planning, saved user history, live traffic-adjusted ETAs, and a Street View integration. 🗺️
-
-THERE IS AN AI ASSISTANT THAT WILL BE ABLE TO HELP YOU WITH THE WEBSITE! CLICK ON THE BUNNY LOGO FOR IT. THANK YOU! THE CODE IS WRITTEN BY ME, AS THE HOURS SHOW. THE CODE IS THEN ORGANIZED AND DEBUGGED BY AI. 
-
-THANK YOU REVIEWERS
+Nova Maps
+A Maps Navigator Website that is a Combination of Apple Maps and Google Maps. Nova Maps has a AI assistant named MrBunny AI to help you!
+<img width="1902" height="972" alt="image" src="https://github.com/user-attachments/assets/d7250d9e-0e95-4931-9f41-ace4005275f4" />
