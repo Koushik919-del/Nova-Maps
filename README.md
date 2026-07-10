@@ -24,4 +24,6 @@ Credits
 - OSM
 - TomTom
 - ORS
-- MrBunny AI
+- MrBunny AI:  https://mrbunnyai-v2.streamlit.app/
+
+
