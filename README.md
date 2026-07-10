@@ -14,6 +14,11 @@ The Features
  - Change Between 4 Map Styles
  - MrBunny AI which helps you with the Website
 
+Why I Wanted To Do This
+ - I wanted the experience of making a Maps experience.
+ - I wanted to more websites where my AI Chatbot "MrBunny AI" can be on
+ - I wanted more and more complicated things on my portofio
+
 Credits
 - Koushik Tummepalli
 - OSM
