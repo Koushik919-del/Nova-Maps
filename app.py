@@ -1,4 +1,4 @@
-this is the origanal code but it was made for streamlit import streamlit as st
+import streamlit as st
 import streamlit.components.v1 as components
 import folium
 from streamlit_folium import st_folium
