@@ -350,7 +350,7 @@ div[data-testid="stVerticalBlock"] > div:has(iframe[srcdoc*="mrbunny-fab"]) {
 # ── Sidebar Area ──────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="main-title">🗺️ Nova Maps</div>', unsafe_allow_html=True)
-    st.caption("Powered by OSM · TomTom · ORS")
+    st.caption("Powered by OSM · TomTom · ORS · NOVA · MrBunnyAI")
     st.divider()
 
     tab = st.radio(
@@ -399,9 +399,9 @@ with st.sidebar:
 
         # UNIQUE FEATURE 1: Warp Engine Teleporter
         st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
-        st.subheader("🚀 Warp Engine")
-        st.caption("Teleport to legendary world locations instantly:")
-        landmark = st.selectbox("Select Destination", [
+        st.subheader("🟣👁️Enderpearl Chamber")
+        st.caption("Teleport to legendary world locations instantly using the Enderman's powers:")
+        landmark = st.selectbox("Select Destination by Throwing Enderpearl", [
             "Select custom coordinates...",
             "Tony Stark's Malibu Mansion (Point Dume)", 
             "The Great Pyramids of Giza", 
